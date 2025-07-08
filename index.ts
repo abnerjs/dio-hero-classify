@@ -1,3 +1,5 @@
+import * as readline from "node:readline";
+
 function classifyHeroLevel(xp: number): string {
 	if (xp < 1000) return "Ferro";
 	if (xp <= 2000) return "Bronze";
@@ -10,10 +12,33 @@ function classifyHeroLevel(xp: number): string {
 	return "Indefinido";
 }
 
-const heroName = "Reyna";
-const heroXP = 7500;
-const heroLevel = classifyHeroLevel(heroXP);
+const rl = readline.createInterface({
+	input: process.stdin,
+	output: process.stdout,
+});
 
-console.log(
-	`O Herói de nome **${heroName}** está no nível de **${heroLevel}**`,
-);
+function promptHeroInfo() {
+	rl.question("Digite o nome do herói (ou 'fim' para sair): ", (heroName) => {
+		if (heroName.toLowerCase() === "fim") {
+			rl.close();
+			return;
+		}
+
+		rl.question("Digite o XP do herói: ", (xpInput) => {
+			const heroXP = Number.parseInt(xpInput, 10);
+
+			if (Number.isNaN(heroXP)) {
+				console.log("XP inválido. Tente novamente.");
+				promptHeroInfo();
+				return;
+			}
+
+			const heroLevel = classifyHeroLevel(heroXP);
+			console.log(`O Herói de nome ${heroName} está no nível de ${heroLevel}`);
+
+			promptHeroInfo();
+		});
+	});
+}
+
+promptHeroInfo();
